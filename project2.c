@@ -293,6 +293,13 @@ char *getVertex(Graph g, int id)
 
 void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 {
+	// Theo như những gì đã học thì giá trị của một nút trong g.edges là một cây JRB dùng để lưu trử các đỉnh kề vớI đỉnh hiện tại
+	// Và giá trị của mỗi nút trong danh sách đỉnh kề là trọng số
+	// Ở đây tôi sẽ thay đổi một chút
+	// Tôi sẽ dùng cây JRB khác để làm trọng số
+	// Trong đó cây JRB này sẽ lưu các tuyến bus đi qua đỉnh hiện tại và đỉnh kề
+
+
 	JRB node, tree, value, tree2;
 	char chuyen[30];
 
@@ -311,7 +318,7 @@ void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 		}
 
 		sprintf(chuyen, "%s(Chuyen Di)", tuyen_bus);
-		tree2 = make_jrb();																		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
+		tree2 = make_jrb();		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
 		jrb_insert_str(tree2, strdup(chuyen), new_jval_i(1)); // Số 1 không quan trọng để số nào cũng đc nhé :v
 		jrb_insert_int(tree, v2, new_jval_v(tree2));
 	}
@@ -340,7 +347,7 @@ void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 		}
 
 		sprintf(chuyen, "%s(Chuyen Ve)", tuyen_bus);
-		tree2 = make_jrb();																		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
+		tree2 = make_jrb();		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
 		jrb_insert_str(tree2, strdup(chuyen), new_jval_i(1)); // Số 1 không quan trọng để số nào cũng đc nhé :v
 		jrb_insert_int(tree, v1, new_jval_v(tree2));
 	}
