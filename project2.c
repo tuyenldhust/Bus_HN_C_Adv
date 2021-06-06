@@ -12,16 +12,16 @@
 
 typedef struct _line_bus
 {
-	char tuyen_bus[MAXLEN];			// Tên tuyến bus
+	char tuyen_bus[MAXLEN];		// Tên tuyến bus
 	int id_diem_bus[MAXFIELDS]; // Danh sách id của điểm bus;
-	int num_diem_bus;						// Số điểm bus trên một dòng khi đọc dữ liệu từ file
+	int num_diem_bus;			// Số điểm bus trên một dòng khi đọc dữ liệu từ file
 } * LineBus;
 
 typedef struct
 {
-	JRB edges;		// Ánh xạ ID sang tên
+	JRB edges;	  // Ánh xạ ID sang tên
 	JRB vertices; // Lưu trữ cạnh
-	JRB name2ID;	// Ánh xạ từ tên sang ID thuận tiện cho việc tìm kiếm
+	JRB name2ID;  // Ánh xạ từ tên sang ID thuận tiện cho việc tìm kiếm
 } Graph;
 
 typedef struct
@@ -57,10 +57,10 @@ void trim(char *s)
 // Hàm đọc file
 void readFile(Graph g, char *filename)
 {
-	int ID = 0;																			// ID bắt đâu băng 0
-	char road[1500];																// Dùng để lưu trữ chuỗi sau dấu : trong file
-	LineBus line_bus = (LineBus *) malloc(sizeof(LineBus));         // Cấp phát động
-	FILE *f = fopen(filename, "r");									// Mở file
+	int ID = 0;													  // ID bắt đâu băng 0
+	char road[1500];											  // Dùng để lưu trữ chuỗi sau dấu : trong file
+	LineBus line_bus = (LineBus)malloc(sizeof(struct _line_bus)); // Cấp phát động
+	FILE *f = fopen(filename, "r");								  // Mở file
 	JRB Node;
 
 	if (f == NULL)
@@ -95,7 +95,7 @@ void readFile(Graph g, char *filename)
 				// Nếu chưa tồn tại thì thêm vào
 				if (jrb_find_str(g.name2ID, token) == NULL)
 				{
-					addVertex(g, ID, token);																	// Thực hiện ánh xạ ID -> tên điểm bus
+					addVertex(g, ID, token);								  // Thực hiện ánh xạ ID -> tên điểm bus
 					jrb_insert_str(g.name2ID, strdup(token), new_jval_i(ID)); // Thực hiện ánh xạ tên điểm bus -> ID để thuận tiện cho việc tìm kiếm ID của điểm bus nhờ vào tên của điểm bus
 					ID++;
 				}
@@ -124,7 +124,7 @@ void readFile(Graph g, char *filename)
 
 int main()
 {
-	StartEnd st[SIZE_MAX]; // Dùng để lưu start, end của 1 chuyến đi sẽ được sử dụng cho thuật toán xây dựng cách di chuyển ở phía dưới 
+	StartEnd st[SIZE_MAX]; // Dùng để lưu start, end của 1 chuyến đi sẽ được sử dụng cho thuật toán xây dựng cách di chuyển ở phía dưới
 	int length, path[100], s, t, index = 0;
 	char startBus[MAXLEN], endBus[MAXLEN];
 	double w;
@@ -154,7 +154,7 @@ int main()
 
 		printf("\n\n");
 		list_tuyen_bus2 = make_jrb(); // Dùng để lưu tạm các chuyến có cùng tuyến với chuyến đã xét trước đó
-		guide = make_jrb(); // Dùng để lưu các bước đi. Khóa sẽ là bước thứ bao nhiêu đó và giá trị là một cây JRB để lưu danh sách tuyến
+		guide = make_jrb();			  // Dùng để lưu các bước đi. Khóa sẽ là bước thứ bao nhiêu đó và giá trị là một cây JRB để lưu danh sách tuyến
 
 		// Thuật toán bên dưới xây dựng cách di chuyển
 		for (int i = 0; i < length - 1; i++)
@@ -182,7 +182,7 @@ int main()
 				// Nếu không sẽ buộc phải chuyển bus
 				// Biến count dùng để đếm số chuyến bus trùng
 				// count = 0 tức là chuyển bus
-				// count != 0 sẽ dùng các chuyến bus trùng đó để đi tiếp 
+				// count != 0 sẽ dùng các chuyến bus trùng đó để đi tiếp
 				jrb_traverse(ptr, cur)
 				{
 					JRB tmp = jrb_find_str(list_tuyen_bus, jval_s(ptr->key));
@@ -205,11 +205,11 @@ int main()
 					list_tuyen_bus = list_tuyen_bus2;
 					list_tuyen_bus2 = make_jrb();
 
-					st[index].end = i + 1; // Cho điểm kết thúc của chỉ dẫn thứ "index" là i + 1. Vì ta lấy giá trị cạnh hai dỉnh i và i + 1 
+					st[index].end = i + 1; // Cho điểm kết thúc của chỉ dẫn thứ "index" là i + 1. Vì ta lấy giá trị cạnh hai dỉnh i và i + 1
 				}
 				else
 				{
-					index++;// Tẳng chỉ dẫn lên hay nói cách khác là chuyển sang bước tiếp theo( chuyển bus)
+					index++; // Tẳng chỉ dẫn lên hay nói cách khác là chuyển sang bước tiếp theo( chuyển bus)
 					list_tuyen_bus = cur;
 
 					// Thêm chỉ dẫn mới
@@ -252,17 +252,10 @@ int main()
 		}
 	}
 
-
-	// Free guide
-	JRB ptr;
-	jrb_traverse(ptr, guide){
-		JRB val = jval_v(jrb_val(ptr));
-		jrb_free_tree(val);
-	}
-
-	jrb_free_tree(guide);
-
 	dropGraph(g);
+
+	//Free guide
+	jrb_free_tree(guide);
 }
 
 Graph createGraph()
@@ -298,7 +291,6 @@ void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 	// Tôi sẽ dùng cây JRB khác để làm trọng số
 	// Trong đó cây JRB này sẽ lưu các tuyến bus đi qua đỉnh hiện tại và đỉnh kề
 
-
 	JRB node, tree, value, tree2;
 	char chuyen[30];
 
@@ -317,7 +309,7 @@ void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 		}
 
 		sprintf(chuyen, "%s(Chuyen Di)", tuyen_bus);
-		tree2 = make_jrb();		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
+		tree2 = make_jrb();									  // tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
 		jrb_insert_str(tree2, strdup(chuyen), new_jval_i(1)); // Số 1 không quan trọng để số nào cũng đc nhé :v
 		jrb_insert_int(tree, v2, new_jval_v(tree2));
 	}
@@ -346,7 +338,7 @@ void addEdge(Graph graph, int v1, int v2, char *tuyen_bus)
 		}
 
 		sprintf(chuyen, "%s(Chuyen Ve)", tuyen_bus);
-		tree2 = make_jrb();		// tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
+		tree2 = make_jrb();									  // tree2 dùng để lưu các tuyến đường có thể đi từ v1 đến v2
 		jrb_insert_str(tree2, strdup(chuyen), new_jval_i(1)); // Số 1 không quan trọng để số nào cũng đc nhé :v
 		jrb_insert_int(tree, v1, new_jval_v(tree2));
 	}
