@@ -8,7 +8,6 @@
 #define INFINITIVE_VALUE 10000000
 #define MAXLEN 150
 #define MAXFIELDS 100
-#define talloc(ty, sz) (ty *)malloc(sz * sizeof(ty))
 #define SIZE_MAX 100
 
 typedef struct _line_bus
@@ -60,7 +59,7 @@ void readFile(Graph g, char *filename)
 {
 	int ID = 0;																			// ID bắt đâu băng 0
 	char road[1500];																// Dùng để lưu trữ chuỗi sau dấu : trong file
-	LineBus line_bus = talloc(struct _line_bus, 1); // Cấp phát động
+	LineBus line_bus = (LineBus *) malloc(sizeof(LineBus));         // Cấp phát động
 	FILE *f = fopen(filename, "r");									// Mở file
 	JRB Node;
 
